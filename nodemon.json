@@ -1,0 +1,6 @@
+{
+  "watch": ["src"],
+  "ext": "ts,json",
+  "ignore": ["src/**/*.spec.ts", "logs"],
+  "exec": "tsc && node --inspect ./dist/index.js"
+}
