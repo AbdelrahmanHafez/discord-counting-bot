@@ -3,13 +3,12 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-const { COUNTING_CHANNEL_ID, DISCORD_TOKEN } = process.env;
-const ONE_HOUR_IN_MILLISECONDS = 3.6e+6;
-
+const { COUNTING_CHANNEL_ID, COUNTING_USER_ID, DISCORD_TOKEN } = process.env;
 run().catch(console.error);
 
 async function run () {
   const client = new Discord.Client();
+
   client.on('ready', () => {
     console.log('Ready!');
     console.log(`Logged in as ${client.user.id}!`);
@@ -17,6 +16,12 @@ async function run () {
 
   client.on('message', async (msg) => {
     if (msg.channel.id !== COUNTING_CHANNEL_ID || msg?.member?.id === client.user.id) {
+      return;
+    }
+
+    if (msg.member?.id === COUNTING_USER_ID && (msg.content.includes('RUINED IT AT') || msg.content.includes('No stats have been changed since the current number'))) {
+      await sleep(5000);
+      await msg.channel.send('1');
       return;
     }
 
@@ -31,9 +36,6 @@ async function run () {
   });
 
   await client.login(DISCORD_TOKEN);
-
-  await sleep(ONE_HOUR_IN_MILLISECONDS);
-  process.exit(0);
 }
 
 async function sleep (milliseconds:number) {
